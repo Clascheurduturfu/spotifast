@@ -65,7 +65,9 @@ fn quick_access(app: &mut App, ui: &mut egui::Ui) {
     if let Some(playlists) = app.library.playlists.get() {
         for playlist in playlists
             .iter()
-            .filter(|p| p.id != "37i9dQZF1EYkqdzj48dyYq" && !p.uri.contains("37i9dQZF1EYkqdzj48dyYq"))
+            .filter(|p| {
+                p.id != "37i9dQZF1EYkqdzj48dyYq" && !p.uri.contains("37i9dQZF1EYkqdzj48dyYq")
+            })
             .take(8usize.saturating_sub(tiles.len()))
         {
             tiles.push(Tile {

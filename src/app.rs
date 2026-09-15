@@ -1726,6 +1726,9 @@ impl App {
         self.table_rows.clear();
         self.page_used.clear();
         self.track_used.clear();
+        self.sleep_timer = None;
+        self.sleep_timer_wait_song_end = false;
+        self.show_sleep_timer = false;
     }
 
     /// Drop table-row caches whose pages are gone, and cap what remains.
@@ -2291,27 +2294,27 @@ impl App {
 
         match timer.setting {
             crate::model::SleepTimerSetting::EndOfTrack => {
-                if timer.initial_track_uri.is_some()
-                    && (current_uri != timer.initial_track_uri || !is_playing)
-                {
-                    expired = true;
-                } else if timer.initial_track_uri.is_none() {
-                    if is_playing {
-                        timer.initial_track_uri = current_uri;
-                    } else {
+                if let Some(ref initial_uri) = timer.initial_track_uri {
+                    if current_uri.as_ref() != Some(initial_uri) || now_playing.is_none() {
                         expired = true;
                     }
+                } else if current_uri.is_some() {
+                    timer.initial_track_uri = current_uri;
+                } else if now_playing.is_none() {
+                    expired = true;
                 }
             }
             crate::model::SleepTimerSetting::Duration(_) => {
                 if let Some(deadline) = timer.deadline {
                     if Instant::now() >= deadline {
-                        if timer.wait_for_song_end && is_playing {
+                        if timer.wait_for_song_end && now_playing.is_some() {
                             if !timer.waiting_for_song_end {
                                 timer.waiting_for_song_end = true;
                                 timer.initial_track_uri = current_uri.clone();
                                 self.toast("Sleep timer reached: finishing current song");
-                            } else if current_uri != timer.initial_track_uri || !is_playing {
+                            } else if current_uri != timer.initial_track_uri
+                                || now_playing.is_none()
+                            {
                                 expired = true;
                             }
                         } else {
@@ -17914,7 +17917,11 @@ mod tests {
 
         app.tick_sleep_timer(&ctx);
         assert!(app.sleep_timer.is_none(), "expired timer should be cleared");
-        assert!(app.toasts.iter().any(|t| t.message.contains("turned off playback")));
+        assert!(
+            app.toasts
+                .iter()
+                .any(|t| t.message.contains("turned off playback"))
+        );
     }
 
     #[test]
@@ -17960,14 +17967,23 @@ mod tests {
         // Tick while current track is song1
         app.tick_sleep_timer(&ctx);
         // Timer should not be expired yet, but should be waiting_for_song_end
-        let timer = app.sleep_timer.as_ref().expect("timer should still be active");
+        let timer = app
+            .sleep_timer
+            .as_ref()
+            .expect("timer should still be active");
         assert!(timer.waiting_for_song_end);
-        assert_eq!(timer.status_text(), "Sleep timer: waiting for song to finish");
+        assert_eq!(
+            timer.status_text(),
+            "Sleep timer: waiting for song to finish"
+        );
 
         // Now change track (e.g. song ended and next song started)
         app.frame_now = Some(mock_now("spotify:track:song2", true));
         app.tick_sleep_timer(&ctx);
-        assert!(app.sleep_timer.is_none(), "timer should expire after track finishes");
+        assert!(
+            app.sleep_timer.is_none(),
+            "timer should expire after track finishes"
+        );
     }
 
     #[test]
@@ -17986,7 +18002,10 @@ mod tests {
 
         // Tick while not playing
         app.tick_sleep_timer(&ctx);
-        assert!(app.sleep_timer.is_none(), "timer should expire immediately if playback is not active");
+        assert!(
+            app.sleep_timer.is_none(),
+            "timer should expire immediately if playback is not active"
+        );
     }
 
     #[test]
@@ -18028,11 +18047,81 @@ mod tests {
 
         // While same track is playing, timer stays active
         app.tick_sleep_timer(&ctx);
-        assert!(app.sleep_timer.is_some(), "timer stays active while track1 plays");
+        assert!(
+            app.sleep_timer.is_some(),
+            "timer stays active while track1 plays"
+        );
 
         // Song finishes and next track starts
         app.frame_now = Some(mock_now("spotify:track:song2", true));
         app.tick_sleep_timer(&ctx);
-        assert!(app.sleep_timer.is_none(), "end of track timer should expire when song finishes");
+        assert!(
+            app.sleep_timer.is_none(),
+            "end of track timer should expire when song finishes"
+        );
+    }
+
+    #[test]
+    fn sleep_timer_end_of_track_does_not_expire_on_pause() {
+        let mut app = headless_app();
+        let ctx = egui::Context::default();
+        let mock_now = |playing: bool| NowPlaying {
+            local: true,
+            device_name: None,
+            uri: "spotify:track:song1".into(),
+            id: None,
+            title: "Track".into(),
+            artists: vec![],
+            subtitle: "".into(),
+            album_name: "".into(),
+            album_id: None,
+            show_id: None,
+            art_url: None,
+            art_small: None,
+            duration_ms: 180000,
+            position_ms: 1000,
+            playing,
+            loading: false,
+            shuffle: false,
+            repeat: crate::player::RepeatMode::Off,
+            volume_percent: 100,
+            can_control: true,
+            is_episode: false,
+            resuming: false,
+        };
+
+        app.frame_now = Some(mock_now(true));
+        let timer = crate::ui::sleep_timer::SleepTimer::new(
+            crate::model::SleepTimerSetting::EndOfTrack,
+            Some("spotify:track:song1".into()),
+            false,
+        );
+        app.sleep_timer = Some(timer);
+
+        // User pauses playback
+        app.frame_now = Some(mock_now(false));
+        app.tick_sleep_timer(&ctx);
+        assert!(
+            app.sleep_timer.is_some(),
+            "pausing track should not discard end-of-track timer"
+        );
+    }
+
+    #[test]
+    fn sleep_timer_cleared_on_reset_data() {
+        let mut app = headless_app();
+        app.sleep_timer = Some(crate::ui::sleep_timer::SleepTimer::new(
+            crate::model::SleepTimerSetting::EndOfTrack,
+            None,
+            true,
+        ));
+        app.sleep_timer_wait_song_end = true;
+        app.show_sleep_timer = true;
+
+        app.reset_data();
+
+        assert!(app.sleep_timer.is_none());
+        assert!(!app.sleep_timer_wait_song_end);
+        assert!(!app.show_sleep_timer);
     }
 }

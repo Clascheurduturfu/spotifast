@@ -1,8 +1,8 @@
 //! Spotify AI DJ (DJ X) TTS voice narration synthesis and audio playback.
 
+use crate::sink::AudioControl;
 use std::collections::HashMap;
 use std::sync::Arc;
-use crate::sink::AudioControl;
 
 fn encode_varint(mut val: u64, buf: &mut Vec<u8>) {
     while val >= 0x80 {
@@ -116,7 +116,10 @@ pub async fn fetch_narration_audio(
                         return Ok(bytes.to_vec());
                     }
                 } else {
-                    last_err = Some(anyhow::anyhow!("Audio download failed with status {}", audio_res.status()));
+                    last_err = Some(anyhow::anyhow!(
+                        "Audio download failed with status {}",
+                        audio_res.status()
+                    ));
                 }
             }
         } else if status.is_success() {
@@ -197,4 +200,56 @@ pub fn handle_track_narration(
             }
         }
     });
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_parse_voice() {
+        assert_eq!(parse_voice(Some("VOICE1")), 1);
+        assert_eq!(parse_voice(Some("VOICE2")), 2);
+        assert_eq!(parse_voice(Some("VOICE15")), 15);
+        assert_eq!(parse_voice(Some("VOICEXYZ")), 1);
+        assert_eq!(parse_voice(Some("OTHER")), 1);
+        assert_eq!(parse_voice(None), 1);
+    }
+
+    #[test]
+    fn test_parse_provider() {
+        assert_eq!(parse_provider(Some("SONANTIC_FAST")), 6);
+        assert_eq!(parse_provider(Some("SONANTIC_DEPRECATED")), 5);
+        assert_eq!(parse_provider(Some("WELL_SAID")), 4);
+        assert_eq!(parse_provider(Some("POLLY")), 3);
+        assert_eq!(parse_provider(Some("READSPEAKER")), 2);
+        assert_eq!(parse_provider(Some("CLOUD_TTS")), 1);
+        assert_eq!(parse_provider(Some("CUSTOM_FALLBACK")), 6);
+        assert_eq!(parse_provider(None), 6);
+    }
+
+    #[test]
+    fn test_encode_tts_request_structure() {
+        let ssml = "<speak>Here is your mix</speak>";
+        let voice = 1;
+        let provider = 6;
+        let sample_rate = 44100;
+        let format = 5; // MP3
+
+        let encoded = encode_tts_request(ssml, voice, provider, sample_rate, format);
+
+        // Field 2 (prompt): tag (2 << 3) | 2 = 0x12
+        assert_eq!(encoded[0], 0x12);
+        assert_eq!(encoded[1], ssml.len() as u8);
+        assert_eq!(&encoded[2..2 + ssml.len()], ssml.as_bytes());
+
+        // Contains field tags:
+        // Field 3: (3 << 3) | 0 = 0x18
+        // Field 5: (5 << 3) | 0 = 0x28
+        // Field 6: (6 << 3) | 0 = 0x30
+        // Field 7: (7 << 3) | 0 = 0x38
+        assert!(encoded.windows(2).any(|w| w == [0x18, format as u8]));
+        assert!(encoded.windows(2).any(|w| w == [0x28, voice as u8]));
+        assert!(encoded.windows(2).any(|w| w == [0x30, provider as u8]));
+    }
 }

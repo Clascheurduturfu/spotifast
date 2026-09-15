@@ -37,7 +37,8 @@ impl SleepTimer {
     }
 
     pub fn remaining_duration(&self) -> Option<Duration> {
-        self.deadline.map(|d| d.saturating_duration_since(Instant::now()))
+        self.deadline
+            .map(|d| d.saturating_duration_since(Instant::now()))
     }
 
     pub fn status_text(&self) -> String {
@@ -214,8 +215,11 @@ pub fn popup(app: &mut App, ctx: &egui::Context) {
                     let (rect, response) =
                         ui.allocate_exact_size(vec2(ui.available_width(), 32.0), Sense::click());
                     if response.hovered() {
-                        ui.painter()
-                            .rect_filled(rect, CornerRadius::same(6), palette.surface_hover);
+                        ui.painter().rect_filled(
+                            rect,
+                            CornerRadius::same(6),
+                            palette.surface_hover,
+                        );
                     }
                     if active {
                         let icon_rect = Rect::from_center_size(
@@ -226,11 +230,7 @@ pub fn popup(app: &mut App, ctx: &egui::Context) {
                             .image(palette.accent, 15.0)
                             .paint_at(ui, icon_rect);
                     }
-                    let text_color = if active {
-                        palette.accent
-                    } else {
-                        palette.text
-                    };
+                    let text_color = if active { palette.accent } else { palette.text };
                     ui.painter().text(
                         pos2(rect.left() + 38.0, rect.center().y),
                         egui::Align2::LEFT_CENTER,
@@ -256,8 +256,11 @@ pub fn popup(app: &mut App, ctx: &egui::Context) {
                     let (rect, response) =
                         ui.allocate_exact_size(vec2(ui.available_width(), 32.0), Sense::click());
                     if response.hovered() {
-                        ui.painter()
-                            .rect_filled(rect, CornerRadius::same(6), palette.surface_hover);
+                        ui.painter().rect_filled(
+                            rect,
+                            CornerRadius::same(6),
+                            palette.surface_hover,
+                        );
                     }
                     let icon_rect = Rect::from_center_size(
                         pos2(rect.left() + 18.0, rect.center().y),

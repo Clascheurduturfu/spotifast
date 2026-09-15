@@ -354,14 +354,16 @@ impl Engine {
 
         let narration_session = session.clone();
         let narration_audio = Arc::clone(&audio);
-        let narration_handler = Arc::new(move |uri: String, metadata: std::collections::HashMap<String, String>| {
-            crate::narration::handle_track_narration(
-                narration_session.clone(),
-                Arc::clone(&narration_audio),
-                uri,
-                metadata,
-            );
-        });
+        let narration_handler = Arc::new(
+            move |uri: String, metadata: std::collections::HashMap<String, String>| {
+                crate::narration::handle_track_narration(
+                    narration_session.clone(),
+                    Arc::clone(&narration_audio),
+                    uri,
+                    metadata,
+                );
+            },
+        );
 
         let connect_config = ConnectConfig {
             name: config.device_name.clone(),

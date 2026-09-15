@@ -154,7 +154,12 @@ impl AudioControl {
         let mut target = self.target.lock().unwrap_or_else(PoisonError::into_inner);
         target.narration_phase = NarrationPhase::Fetching;
         target.narration_phase_start = Some(Instant::now());
-        log::info!("AudioControl: DJ narration requested; music playback will wait for narration to complete");
+        if let Some(sink) = target.sink.upgrade() {
+            sink.pause();
+        }
+        log::info!(
+            "AudioControl: DJ narration requested; pausing music sink and waiting for narration to complete"
+        );
     }
 
     /// Signals that DJ narration finished or failed.
@@ -162,6 +167,9 @@ impl AudioControl {
         let mut target = self.target.lock().unwrap_or_else(PoisonError::into_inner);
         target.narration_phase = NarrationPhase::Idle;
         target.narration_phase_start = None;
+        if let Some(sink) = target.sink.upgrade() {
+            sink.play();
+        }
     }
 
     /// Checks if DJ narration is currently being fetched or actively playing.
@@ -174,9 +182,14 @@ impl AudioControl {
                     .narration_phase_start
                     .is_some_and(|t| t.elapsed() > Duration::from_secs(5))
                 {
-                    log::warn!("AudioControl: DJ narration fetch timed out; releasing music stream");
+                    log::warn!(
+                        "AudioControl: DJ narration fetch timed out; releasing music stream"
+                    );
                     target.narration_phase = NarrationPhase::Idle;
                     target.narration_phase_start = None;
+                    if let Some(sink) = target.sink.upgrade() {
+                        sink.play();
+                    }
                     false
                 } else {
                     true
@@ -194,11 +207,17 @@ impl AudioControl {
                         log::info!("AudioControl: DJ narration completed; starting music playback");
                         target.narration_phase = NarrationPhase::Idle;
                         target.narration_phase_start = None;
+                        if let Some(sink) = target.sink.upgrade() {
+                            sink.play();
+                        }
                         false
                     } else if start_elapsed > Duration::from_secs(45) {
                         log::warn!("AudioControl: DJ narration playback timed out");
                         target.narration_phase = NarrationPhase::Idle;
                         target.narration_phase_start = None;
+                        if let Some(sink) = target.sink.upgrade() {
+                            sink.play();
+                        }
                         false
                     } else {
                         true
@@ -277,7 +296,12 @@ impl AudioControl {
         self.reset_output.swap(false, Ordering::SeqCst)
     }
 
-    fn register(&self, sink: &Arc<rodio::Sink>, narration_sink: rodio::Sink, envelope: Arc<Envelope>) {
+    fn register(
+        &self,
+        sink: &Arc<rodio::Sink>,
+        narration_sink: rodio::Sink,
+        envelope: Arc<Envelope>,
+    ) {
         let mut target = self.target.lock().unwrap_or_else(PoisonError::into_inner);
         target.sink = Arc::downgrade(sink);
         if let Some(volume) = target.volume {
@@ -715,7 +739,8 @@ impl Sink for RodioSink {
             let sink = Arc::new(rodio::Sink::connect_new(output._stream.mixer()));
             let narration_sink = rodio::Sink::connect_new(output._stream.mixer());
             let envelope = Envelope::rising(output.sample_rate, INTERRUPT_FADE);
-            self.control.register(&sink, narration_sink, Arc::clone(&envelope));
+            self.control
+                .register(&sink, narration_sink, Arc::clone(&envelope));
             output.sink = sink;
             output.envelope = envelope;
             output.queued = Queued::new();

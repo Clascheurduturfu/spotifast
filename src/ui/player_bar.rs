@@ -609,7 +609,10 @@ fn extras(app: &mut App, ui: &mut egui::Ui, now: Option<&NowPlaying>) {
         &sleep_timer_tooltip,
     );
     ui.ctx().data_mut(|data| {
-        data.insert_temp(egui::Id::new(super::sleep_timer::BUTTON_RECT_ID), sleep_btn.rect)
+        data.insert_temp(
+            egui::Id::new(super::sleep_timer::BUTTON_RECT_ID),
+            sleep_btn.rect,
+        )
     });
     if sleep_btn.clicked() {
         app.actions.push(Action::ToggleSleepTimerPopup);
