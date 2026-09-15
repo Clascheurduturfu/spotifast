@@ -27,19 +27,19 @@ pub fn encode_tts_request(
     buf.extend_from_slice(ssml.as_bytes());
 
     // Field 3: audio_format - wire type 0 (varint)
-    encode_varint((3 << 3) | 0, &mut buf);
+    encode_varint(3 << 3, &mut buf);
     encode_varint(format as u64, &mut buf);
 
     // Field 5: tts_voice - wire type 0 (varint)
-    encode_varint((5 << 3) | 0, &mut buf);
+    encode_varint(5 << 3, &mut buf);
     encode_varint(voice as u64, &mut buf);
 
     // Field 6: tts_provider - wire type 0 (varint)
-    encode_varint((6 << 3) | 0, &mut buf);
+    encode_varint(6 << 3, &mut buf);
     encode_varint(provider as u64, &mut buf);
 
     // Field 7: sample_rate_hz - wire type 0 (varint)
-    encode_varint((7 << 3) | 0, &mut buf);
+    encode_varint(7 << 3, &mut buf);
     encode_varint(sample_rate as u64, &mut buf);
 
     buf

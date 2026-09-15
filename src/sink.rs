@@ -724,12 +724,10 @@ impl Sink for RodioSink {
             if self.control.waiting_for_track() {
                 return Ok(());
             }
-            if let Some(ref output) = self.output {
-                if output.failed() {
-                    let message = "The audio output stopped working".to_string();
-                    (self.on_error)(message.clone());
-                    return Err(SinkError::OnWrite(message));
-                }
+            if self.output.as_ref().is_some_and(|output| output.failed()) {
+                let message = "The audio output stopped working".to_string();
+                (self.on_error)(message.clone());
+                return Err(SinkError::OnWrite(message));
             }
             thread::sleep(Duration::from_millis(15));
         }

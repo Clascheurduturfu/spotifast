@@ -2305,21 +2305,20 @@ impl App {
                 }
             }
             crate::model::SleepTimerSetting::Duration(_) => {
-                if let Some(deadline) = timer.deadline {
-                    if Instant::now() >= deadline {
-                        if timer.wait_for_song_end && now_playing.is_some() {
-                            if !timer.waiting_for_song_end {
-                                timer.waiting_for_song_end = true;
-                                timer.initial_track_uri = current_uri.clone();
-                                self.toast("Sleep timer reached: finishing current song");
-                            } else if current_uri != timer.initial_track_uri
-                                || now_playing.is_none()
-                            {
-                                expired = true;
-                            }
-                        } else {
+                if timer
+                    .deadline
+                    .is_some_and(|deadline| Instant::now() >= deadline)
+                {
+                    if timer.wait_for_song_end && now_playing.is_some() {
+                        if !timer.waiting_for_song_end {
+                            timer.waiting_for_song_end = true;
+                            timer.initial_track_uri = current_uri.clone();
+                            self.toast("Sleep timer reached: finishing current song");
+                        } else if current_uri != timer.initial_track_uri || now_playing.is_none() {
                             expired = true;
                         }
+                    } else {
+                        expired = true;
                     }
                 }
             }
