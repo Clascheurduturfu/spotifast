@@ -6,7 +6,7 @@ msgstr ""
 "Project-Id-Version: Spotifast\n"
 "Report-Msgid-Bugs-To: https://github.com/crmne/spotifast/issues/new?"
 "template=translation.yml\n"
-"POT-Creation-Date: 2026-09-15 00:25+0200\n"
+"POT-Creation-Date: 2026-09-22 19:35+0200\n"
 "PO-Revision-Date: 2026-09-09 13:30+0000\n"
 "Last-Translator: Spotifast contributors\n"
 "Language-Team: Russian\n"
@@ -17,11 +17,11 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=(n % 10 == 1 && n % 100 != 11 ? 0 : n % 10 "
 ">= 2 && n % 10 <= 4 && (n % 100 < 12 || n % 100 > 14) ? 1 : 2);\n"
 
-#: src/ui/sidebar.rs:64 src/app.rs:1930 src/app.rs:12699
+#: src/ui/sidebar.rs:64 src/app.rs:1939 src/app.rs:12847
 msgid "Liked Songs"
 msgstr "Любимые треки"
 
-#: src/ui/sidebar.rs:67 src/app.rs:1956 src/app.rs:12694
+#: src/ui/sidebar.rs:67 src/app.rs:1965 src/app.rs:12842
 msgid "Playlist"
 msgstr "Плейлист"
 
@@ -97,7 +97,7 @@ msgstr "Подкасты"
 msgid "Search in Your Library"
 msgstr "Искать в медиатеке"
 
-#: src/ui/sidebar.rs:780 src/app.rs:1991
+#: src/ui/sidebar.rs:780 src/app.rs:2000
 msgid "Artist"
 msgstr "Исполнитель"
 
@@ -185,6 +185,11 @@ msgstr "Очередь"
 #: src/ui/player_bar.rs:588 src/ui/lyrics.rs:46 src/ui/lyrics.rs:334
 msgid "Lyrics"
 msgstr "Текст песни"
+
+#: src/ui/player_bar.rs:597 src/ui/sleep_timer.rs:66 src/ui/sleep_timer.rs:73
+#: src/ui/sleep_timer.rs:108
+msgid "Sleep timer"
+msgstr "Таймер сна"
 
 #: src/ui/queue.rs:73
 msgid "Recent"
@@ -296,26 +301,94 @@ msgstr "Уменьшить анимацию текста"
 msgid "Loading…"
 msgstr "Загрузка…"
 
-#: src/app.rs:1938
+#: src/ui/sleep_timer.rs:50
+msgid "Sleep timer: waiting for song to finish"
+msgstr "Таймер сна: ожидание окончания трека"
+
+#: src/ui/sleep_timer.rs:54
+msgid "Sleep timer: end of track"
+msgstr "Таймер сна: конец трека"
+
+#: src/ui/sleep_timer.rs:62
+msgid "waits for song end"
+msgstr "ждет окончания трека"
+
+#: src/ui/sleep_timer.rs:116 src/ui/sleep_timer.rs:231
+msgid "End of track"
+msgstr "Конец трека"
+
+#: src/ui/sleep_timer.rs:153 src/ui/sleep_timer.rs:177
+msgid "Wait for song to finish"
+msgstr "Подождать окончания трека"
+
+#: src/ui/sleep_timer.rs:188
+msgid "Let the current song finish before stopping"
+msgstr "Дать текущему треку доиграть до конца"
+
+#: src/ui/sleep_timer.rs:207
+msgid "5 minutes"
+msgstr "5 минут"
+
+#: src/ui/sleep_timer.rs:211
+msgid "10 minutes"
+msgstr "10 минут"
+
+#: src/ui/sleep_timer.rs:215
+msgid "15 minutes"
+msgstr "15 минут"
+
+#: src/ui/sleep_timer.rs:219
+msgid "30 minutes"
+msgstr "30 минут"
+
+#: src/ui/sleep_timer.rs:223
+msgid "45 minutes"
+msgstr "45 минут"
+
+#: src/ui/sleep_timer.rs:227
+msgid "1 hour"
+msgstr "1 час"
+
+#: src/ui/sleep_timer.rs:304 src/ui/sleep_timer.rs:318
+msgid "Turn off timer"
+msgstr "Выключить таймер"
+
+#: src/app.rs:1947
 msgid "Radio"
 msgstr "Радио"
 
-#: src/app.rs:1972
+#: src/app.rs:1981
 msgid "Album"
 msgstr "Альбом"
 
-#: src/app.rs:2010
+#: src/app.rs:2019
 msgid "Podcast"
 msgstr "Подкаст"
 
 #. Translators: Keep {track} unchanged. The song title itself is not translated.
-#: src/app.rs:2028 src/app.rs:12704
+#: src/app.rs:2037 src/app.rs:12852
 #, rust-format
 msgid "{track} Radio"
 msgstr "Радио по треку «{track}»"
 
+#: src/app.rs:2336
+msgid "Sleep timer reached: finishing current song"
+msgstr "Таймер сработал: завершение воспроизведения текущего трека"
+
+#: src/app.rs:2369
+msgid "Sleep timer turned off playback"
+msgstr "Таймер сна остановил воспроизведение"
+
+#: src/app.rs:2372
+msgid "Sleep timer expired"
+msgstr "Время таймера сна истекло"
+
 #. Translators: Keep {date} unchanged. It is a date in YYYY-MM-DD form.
-#: src/app.rs:3798 src/app.rs:12684
+#: src/app.rs:3908 src/app.rs:12832
 #, rust-format
 msgid "Queue {date}"
 msgstr "Очередь {date}"
+
+#: src/app.rs:7580
+msgid "Sleep timer turned off"
+msgstr "Таймер сна выключен"

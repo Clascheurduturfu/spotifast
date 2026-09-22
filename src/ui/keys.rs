@@ -170,6 +170,8 @@ pub fn handle(app: &mut App, ctx: &egui::Context) {
             app.actions.push(Action::CloseDialog);
         } else if app.show_devices {
             app.show_devices = false;
+        } else if app.show_sleep_timer {
+            app.actions.push(Action::CloseSleepTimerPopup);
         } else if app.lyrics_fullscreen.is_some() {
             app.actions.push(Action::SetLyricsFullscreen(false));
         }

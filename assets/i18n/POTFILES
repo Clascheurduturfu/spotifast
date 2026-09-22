@@ -4,4 +4,5 @@ src/ui/player_bar.rs
 src/ui/queue.rs
 src/ui/lyrics.rs
 src/ui/widgets.rs
+src/ui/sleep_timer.rs
 src/app.rs

@@ -6,7 +6,7 @@ msgstr ""
 "Project-Id-Version: Spotifast\n"
 "Report-Msgid-Bugs-To: https://github.com/crmne/spotifast/issues/new?"
 "template=translation.yml\n"
-"POT-Creation-Date: 2026-09-15 00:25+0200\n"
+"POT-Creation-Date: 2026-09-22 19:35+0200\n"
 "PO-Revision-Date: 2026-09-09 13:30+0000\n"
 "Last-Translator: Spotifast contributors\n"
 "Language-Team: Traditional Chinese\n"
@@ -16,11 +16,11 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
-#: src/ui/sidebar.rs:64 src/app.rs:1930 src/app.rs:12699
+#: src/ui/sidebar.rs:64 src/app.rs:1939 src/app.rs:12847
 msgid "Liked Songs"
 msgstr "喜歡的歌曲"
 
-#: src/ui/sidebar.rs:67 src/app.rs:1956 src/app.rs:12694
+#: src/ui/sidebar.rs:67 src/app.rs:1965 src/app.rs:12842
 msgid "Playlist"
 msgstr "播放清單"
 
@@ -96,7 +96,7 @@ msgstr "Podcast"
 msgid "Search in Your Library"
 msgstr "在音樂庫中搜尋"
 
-#: src/ui/sidebar.rs:780 src/app.rs:1991
+#: src/ui/sidebar.rs:780 src/app.rs:2000
 msgid "Artist"
 msgstr "藝人"
 
@@ -182,6 +182,11 @@ msgstr "播放佇列"
 #: src/ui/player_bar.rs:588 src/ui/lyrics.rs:46 src/ui/lyrics.rs:334
 msgid "Lyrics"
 msgstr "歌詞"
+
+#: src/ui/player_bar.rs:597 src/ui/sleep_timer.rs:66 src/ui/sleep_timer.rs:73
+#: src/ui/sleep_timer.rs:108
+msgid "Sleep timer"
+msgstr "睡眠定時器"
 
 #: src/ui/queue.rs:73
 msgid "Recent"
@@ -293,26 +298,94 @@ msgstr "減少歌詞動畫"
 msgid "Loading…"
 msgstr "載入中…"
 
-#: src/app.rs:1938
+#: src/ui/sleep_timer.rs:50
+msgid "Sleep timer: waiting for song to finish"
+msgstr "睡眠定時器：等待當前歌曲播放完畢"
+
+#: src/ui/sleep_timer.rs:54
+msgid "Sleep timer: end of track"
+msgstr "睡眠定時器：本曲結束"
+
+#: src/ui/sleep_timer.rs:62
+msgid "waits for song end"
+msgstr "等待歌曲結束"
+
+#: src/ui/sleep_timer.rs:116 src/ui/sleep_timer.rs:231
+msgid "End of track"
+msgstr "本曲結束"
+
+#: src/ui/sleep_timer.rs:153 src/ui/sleep_timer.rs:177
+msgid "Wait for song to finish"
+msgstr "等待歌曲播放完畢"
+
+#: src/ui/sleep_timer.rs:188
+msgid "Let the current song finish before stopping"
+msgstr "停止前先播放完當前歌曲"
+
+#: src/ui/sleep_timer.rs:207
+msgid "5 minutes"
+msgstr "5 分鐘"
+
+#: src/ui/sleep_timer.rs:211
+msgid "10 minutes"
+msgstr "10 分鐘"
+
+#: src/ui/sleep_timer.rs:215
+msgid "15 minutes"
+msgstr "15 分鐘"
+
+#: src/ui/sleep_timer.rs:219
+msgid "30 minutes"
+msgstr "30 分鐘"
+
+#: src/ui/sleep_timer.rs:223
+msgid "45 minutes"
+msgstr "45 分鐘"
+
+#: src/ui/sleep_timer.rs:227
+msgid "1 hour"
+msgstr "1 小時"
+
+#: src/ui/sleep_timer.rs:304 src/ui/sleep_timer.rs:318
+msgid "Turn off timer"
+msgstr "關閉定時器"
+
+#: src/app.rs:1947
 msgid "Radio"
 msgstr "電台"
 
-#: src/app.rs:1972
+#: src/app.rs:1981
 msgid "Album"
 msgstr "專輯"
 
-#: src/app.rs:2010
+#: src/app.rs:2019
 msgid "Podcast"
 msgstr "Podcast"
 
 #. Translators: Keep {track} unchanged. The song title itself is not translated.
-#: src/app.rs:2028 src/app.rs:12704
+#: src/app.rs:2037 src/app.rs:12852
 #, rust-format
 msgid "{track} Radio"
 msgstr "{track} 電台"
 
+#: src/app.rs:2336
+msgid "Sleep timer reached: finishing current song"
+msgstr "睡眠定時器已到達：正在完成當前歌曲"
+
+#: src/app.rs:2369
+msgid "Sleep timer turned off playback"
+msgstr "睡眠定時器已停止播放"
+
+#: src/app.rs:2372
+msgid "Sleep timer expired"
+msgstr "睡眠定時器已到期"
+
 #. Translators: Keep {date} unchanged. It is a date in YYYY-MM-DD form.
-#: src/app.rs:3798 src/app.rs:12684
+#: src/app.rs:3908 src/app.rs:12832
 #, rust-format
 msgid "Queue {date}"
 msgstr "佇列 {date}"
+
+#: src/app.rs:7580
+msgid "Sleep timer turned off"
+msgstr "睡眠定時器已關閉"

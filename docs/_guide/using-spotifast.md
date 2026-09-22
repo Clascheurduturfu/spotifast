@@ -289,3 +289,12 @@ scroll and highlight motion. The side panel keeps its usual appearance.
 | Dark theme | Light theme |
 | --- | --- |
 | ![Full-screen lyrics with the dark player bar](/assets/images/lyrics-fullscreen-dark.png) | ![Full-screen lyrics with the light player bar](/assets/images/lyrics-fullscreen-light.png) |
+
+## Sleep timer
+
+In the player bar, choose the moon icon to configure a sleep timer. Select a duration
+(from 5 minutes up to 1 hour) or **End of track**.
+
+The **Wait for song to finish** toggle ensures that when a duration countdown elapses,
+playback allows the active track to finish before pausing. The player bar icon highlights
+while active, and its tooltip displays remaining time. Choosing **Turn off timer** cancels it.
